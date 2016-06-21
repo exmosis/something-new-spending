@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<script
+			  src="https://code.jquery.com/jquery-3.0.0.min.js"
+			  integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0="
+			  crossorigin="anonymous"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+	<script src="https://code.highcharts.com/modules/treemap.js"></script>
+
+	<style type="text/css">
+	body {
+		font-family: arial;
+	}
+	#body_wrapper {
+		width: 75%;
+		margin: 0 auto;
+	}
+	#body_wrapper > div {
+		width: 100%;
+	}
+	</style>
+
+	<script>
+	$(function () {
+
+		// Get data
+		var url = "http://exmosis.net/something-new-spending/spend_as_json.php?callback=?";
+		$.getJSON(url,  function(data) {
+
+			data = data['annual_supplier_totals']['2015'];
+			var chart_data = [];
+			for (var data_key in data) {
+				this_data_point = {
+					name: data_key,
+					value: data[data_key],
+					colorValue: data[data_key]
+				};
+				chart_data.push(this_data_point);
+			}
+
+			$('#container').highcharts({
+			        colorAxis: {
+			            minColor: '#FFFFFF',
+			            maxColor: Highcharts.getOptions().colors[0]
+			        },
+			        series: [{
+				    type: 'treemap',
+			            // layoutAlgorithm: 'squarified',
+			            layoutAlgorithm: 'sliceAndDice',
+				    dataLabels: {
+					formatter: function() {
+						return '<b>' + this.point.name + ':</b><br />' + 
+							'£' + this.point.value;
+					}
+				    },
+			            data: chart_data
+			                // colorValue: 7
+			        }],
+			        title: {
+			            text: 'Something New Spending, 2015'
+			        }
+			});
+		});		
+	});
+
+	</script>
+</head>
+<body>
+    <div id="body_wrapper">
+	<div id="container"></div>
+	<div id="explanation">
+		<h2>What do we use these for?</h2>
+		<ul>
+			<li>We use <strong>NationBuilder</strong> for ...</li>
+			<li>We use <strong>Twibbon</strong> for ...</li>
+			<li>We use <strong>Soundcloud</strong> for ...</li>
+			<li>We use <strong>Meetup</strong> for ...</li>
+			<li>We use <strong>GANDI International</strong> for ...</li>
+			<li>We use <strong>PostLayer</strong> for ...</li>
+		</ul>
+	</div>
+    </div>
+</body>
+</html>
+
