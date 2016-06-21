@@ -1,5 +1,10 @@
 <?php
 
+$callback = null;
+if (isset($_GET['callback'])) {
+  $callback = trim($_GET['callback']);
+}
+
 $csv_url = 'https://somethingnewuk.github.io/finances/national/expenditure.csv';
 $csv_fields = array(
 	'total_paid' => 6,
@@ -43,12 +48,23 @@ $annual_total_by_supplier = aggregateRawData($raw_data,
 outputJson(array(
 		'annual_totals' => $annual_total,
 		'annual_supplier_totals' => $annual_total_by_supplier
-	));
+	),
+  $callback 
+);
 
 
-function outputJson($body_fields_and_data) {
-	header('Content-type: application/json');
-	echo json_encode($body_fields_and_data);
+function outputJson($body_fields_and_data, $callback = null) {
+	$json_data = json_encode($body_fields_and_data);
+  if ($callback) {
+    $json_data = $callback . '(' . $json_data . ');';
+  }
+
+  if ($callback) {
+    header('Content-type: application/javascript');
+  } else {
+  	header('Content-type: application/json');
+  }
+  echo $json_data;
 }
 
 function convertSupplier($supplier) {
